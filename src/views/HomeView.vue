@@ -2,7 +2,7 @@
   <body style="height: 749px width: 694px">
     <div id="header" class="header"></div>
 
-    <div class="Nsearch">
+    <div class="search">
       <div class="search_inner">
         <div class="search_box">
           <div class="search_box_inner">
@@ -37,7 +37,26 @@
 
         <a href class="search_list_bus" v-if="isAfterSearch">
           <div class="search_list_bus_txt1">
-            <i class="bus_routetype"></i>
+            <!-- <img :src="require('@/assets/icon_bus_1.png')" /> -->
+            <div v-for="n in 8" v-bind:key="n">
+              <img
+                v-if="n === Number(item.msgBody.itemList[0].routeType)"
+                :class="`bus_routetype`"
+                :src="require(`@/assets/icon_bus_${n}.png`)"
+              />
+            </div>
+            <!-- <i
+              v-if="item.msgBody.itemList[0].routeType === '3'"
+              class="bus_routetype3"
+            ></i>
+            <i
+              v-else-if="item.msgBody.itemList[0].routeType === '4'"
+              class="bus_routetype4"
+            ></i>
+            <i
+              v-else-if="item.msgBody.itemList[0].routeType === '1'"
+              class="bus_routetype1"
+            ></i> -->
             <!-- {{ item.msgBody && item.msgBody.itemList[0].routeType }} -->
             <strong>
               {{ item.msgBody && item.msgBody.itemList[0].busRouteNm }}</strong
@@ -88,7 +107,8 @@ export default {
     return {
       item: {},
       searchKeyword: '',
-      isAfterSearch: false
+      isAfterSearch: false,
+      type: 0
     }
   },
   setup() {},
@@ -109,9 +129,10 @@ export default {
     async getList() {
       const url = `https://cors-anywhere.herokuapp.com/http://ws.bus.go.kr/api/rest/busRouteInfo/getBusRouteList?serviceKey=LNBl1jhu4absp9VCmqpNW4HHi7HGl8DjZaWTg%2FWMGVm0dUDoN5O%2BpayIzK7Z2eoX%2BbUEnVxlpTcDWECTSpkmQQ%3D%3D&resultType=json&strSrch=${this.searchKeyword}`
       console.log('url', url)
-      this.item = await this.$api(url)
+      const result = await this.$api(url)
+      this.item = result
       console.log('item', this.item)
-
+      console.log('value chec', result?.msgBody?.itemList[0])
       // strSrch = 요청받는 버스번호
       // busRouteId = 노선ID
       // busRouteNm = 노선명
@@ -164,7 +185,7 @@ export default {
   width: 100%;
 }
 
-.Nsearch {
+.search {
   position: relative;
   padding: 6px 6px 6px 6px;
   line-height: 14px;
@@ -359,9 +380,11 @@ export default {
   color: #666;
   background: none;
 }
+.txt {
+  color: rgb(102, 99, 99);
+}
 .bus_routetype {
-  margin: 0 8px 0 0;
-  background-image: url('https://ssl.pstatic.net/static/maps/m/img_bus/icon_bus_12.png');
+  margin: 2px 8px 0 0;
   overflow: hidden;
   display: inline-block;
   width: 26px;
@@ -370,8 +393,5 @@ export default {
   background-repeat: no-repeat;
   color: transparent;
   vertical-align: top;
-}
-.txt {
-  color: rgb(102, 99, 99);
 }
 </style>
