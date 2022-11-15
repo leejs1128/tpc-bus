@@ -5,3 +5,19 @@ import store from './store'
 import mixins from './mixins'
 
 createApp(App).use(store).use(router).mixin(mixins).mount('#app')
+
+// Vue.use(VueRouter)
+
+// const router = new VueRouter({
+//   mode: 'history',
+//   routes: [
+//     {
+//       path: '/',
+//       component: HomeView
+//     },
+//     {
+//       path: '/station/:stationId',
+//       component: Station
+//     }
+//   ]
+// })

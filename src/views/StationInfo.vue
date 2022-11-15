@@ -12,7 +12,7 @@
                 value
                 v-model="searchKeyword"
                 maxlength="100"
-                placeholder="버스번호,정류장 검색"
+                placeholder=""
                 title="검색어 입력"
                 class="search_text"
                 @keyup.enter="search"
@@ -22,7 +22,7 @@
               <button type="button" class="box_button2">
                 <span class="icon_delete"></span>
               </button>
-              <button type="button" class="search_button">
+              <button type="button" class="search_button" @click="search">
                 <span class="icon_button"></span>
               </button>
             </span>
@@ -34,43 +34,29 @@
       <div class="search_busbox_list">
         <a href class="search_list_bus" v-if="isAfterSearch">
           <div class="search_list_bus_txt1">
-            <!-- <img :src="require('@/assets/icon_bus_1.png')" /> -->
-            <div v-for="n in 8" v-bind:key="n">
+            <!-- <div v-for="n in 8" v-bind:key="n">
               <img
                 v-if="n === Number(item.msgBody.itemList[0].routeType)"
                 :class="`bus_routetype`"
                 :src="require(`@/assets/icon_bus_${n}.png`)"
               />
-            </div>
-            <strong>
-              {{ item.msgBody && item.msgBody.itemList[0].busRouteNm }}</strong
-            >
-            <span class="real_time"> 실시간</span>
+            </div> -->
+            <span class="real_time"></span>
           </div>
           <p class="search_list_bus_txt2">
-            <span class="txt">서울</span>
-            <span class="search_list_bus_bar">|</span>
-            {{ item.msgBody && item.msgBody.itemList[0].stStationNm }}
-            <i class="icon_twin"></i>
-            {{ item.msgBody && item.msgBody.itemList[0].edStationNm }}
+            <span class="txt"></span>
+            <span class="search_list_bus_bar"></span>
+            <!-- <i class="icon_twin"></i> -->
           </p>
           <p class="search_list_bus_txt3">
-            <span class="txt">첫차</span>
-            <em class="search_list_bus_em">{{
-              item.msgBody && getDate(item.msgBody.itemList[0].firstBusTm)
-            }}</em>
-            <span class="search_list_bus_bar">|</span>
-            <span class="txt">막차</span>
-            <em class="search_list_bus_em">{{
-              item.msgBody && getDate(item.msgBody.itemList[0].lastBusTm)
-            }}</em>
-            <span class="search_list_bus_bar">|</span>
-            <em class="search_list_bus_em"
-              >{{ item.msgBody && item.msgBody.itemList[0].term
-              }}<span>분 간격</span></em
-            >
-          </p>
-        </a>
+            <span class="txt"></span>
+            <em class="search_list_bus_em"> </em>
+            <span class="search_list_bus_bar"></span>
+            <span class="txt"></span>
+            <em class="search_list_bus_em"> </em>
+            <span class="search_list_bus_bar"></span>
+            <em class="search_list_bus_em"> <span></span></em></p
+        ></a>
         <div v-else class="search_error_msg">
           <span class="search_error_icon_msg"></span>
           최근 검색 기록이 없습니다.
@@ -87,7 +73,8 @@ export default {
       item: {},
       searchKeyword: '',
       isAfterSearch: false,
-      type: 0
+      type: 0,
+      chat: ''
     }
   },
   setup() {},
@@ -104,38 +91,37 @@ export default {
   },
   methods: {
     async getList() {
-      console.log('131', typeof this.searchKeyword)
-      if (this.searchKeyword === isNumber) {
-        const url = `https://cors-anywhere.herokuapp.com/http://ws.bus.go.kr/api/rest/stationInfo/getBusRouteStationByName?serviceKey=LNBl1jhu4absp9VCmqpNW4HHi7HGl8DjZaWTg%2FWMGVm0dUDoN5O%2BpayIzK7Z2eoX%2BbUEnVxlpTcDWECTSpkmQQ%3D%3D&resultType=json&strSrch=${this.searchKeyword}`
-      } else {
-        const url = `https://cors-anywhere.herokuapp.com/http://ws.bus.go.kr/api/rest/busRouteInfo/getBusRouteList?serviceKey=LNBl1jhu4absp9VCmqpNW4HHi7HGl8DjZaWTg%2FWMGVm0dUDoN5O%2BpayIzK7Z2eoX%2BbUEnVxlpTcDWECTSpkmQQ%3D%3D&resultType=json&strSrch=${this.searchKeyword}`
-      }
-      console.log('url', url)
+      const url = `https://cors-anywhere.herokuapp.com/http://ws.bus.go.kr/api/rest/stationinfo/getStationByName?serviceKey=LNBl1jhu4absp9VCmqpNW4HHi7HGl8DjZaWTg%2FWMGVm0dUDoN5O%2BpayIzK7Z2eoX%2BbUEnVxlpTcDWECTSpkmQQ%3D%3D&resultType=json&stSrch=${this.searchKeyword}`
       console.log('url', url)
       const result = await this.$api(url)
       this.item = result
       console.log('item', this.item)
       console.log('value chec', result?.msgBody?.itemList[0])
-      // const routes = [{ path: '/home', rediret: '/' }]
-      // strSrch = 요청받는 버스번호
+      // stSrch = 요청받는 정류소명
+      // stId = 정류소 고유 id
+      // stNm = 정류소명
+      // arsId = 정류소 고유번호
+
+      // getRouteByStation
       // busRouteId = 노선ID
-      // busRouteNm = 노선명
-      // routeType = (1:공항,2:마을,3:간선,4:지선,5:순환,6:광역,7:인천,8:경기,9:폐지,0:공용) 노선유형
-      // stStaitionNm = 기점
-      // edStationNm = 종점
-      // term = 배차간격(분)
-      // firstBusTm = 금일첫차시간
+      // arsId = 요청받는 정류소 고유번호
+      // term = 배차간격
+      // firstBusTm =68 금일첫차시간
       // lastBusTm = 금일막차시간
+      // busRouteNm = 노선명
+      // busRouteType = (1:공항,2:마을,3:간선,4:지선,5:순환,6:광역,7:인천,8:경기,9:폐지,0:공용) 노선유형
+      // stBegin = 기점
+      // stEnd = 종점
     },
     async search() {
       await this.getList()
       this.isAfterSearch = true
       console.log('search')
-    },
-    getDate(date) {
-      date.substring(8, 10)
-      return date.substring(8, 10) + ':' + date.substring(10, 12)
     }
+    // getDate(date) {
+    //   date.substring(8, 10)
+    //   return date.substring(8, 10) + ':' + date.substring(10, 12)
+    // }
   }
 }
 </script>
@@ -300,13 +286,13 @@ export default {
 }
 .search_list_bus {
   position: relative;
-  height: 690px;
+  height: 700px;
   display: block;
   padding: 16px 14px 0;
   background-color: #fff;
   color: black;
   text-decoration: none;
-  border: 1px solid #e2e4e8;
+  /* border 1px solid #e2e4c8; */
   margin-bottom: -1px;
 }
 .search_list_bus_txt1 {
